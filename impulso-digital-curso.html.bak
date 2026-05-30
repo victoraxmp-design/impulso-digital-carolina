@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{  --bg:#fffbfa;--sidebar:#ffebef;--card:#fff2eb;--card2:#ffe0e8;--gold:#ffd6dc;  --gold-l:#fffbfa;--teal:#ffebef;--purple:#fff2eb;--coral:#ffe0e8;--green:#ffd6dc;  --txt:#fffbfa;--txt2:#ffebef;--txt3:#fff2eb;--border:#fffbfa;--border2:#ffebef;  --r:14px;--r-lg:20px;}
+:root{  --bg:#a8e6cf;--sidebar:#ddedc4;--card:#ffd4b8;--card2:#ffadad;--gold:#ff667d;  --gold-l:#a8e6cf;--teal:#ddedc4;--purple:#ffd4b8;--coral:#ffadad;--green:#ff667d;  --txt:#2c3e50;--txt2:#34495e;--txt3:#7f8c8d;--border:#a8e6cf;--border2:#ddedc4;  --r:14px;--r-lg:20px;}
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden}
 h1,h2,h3,h4{font-family:'Sora',sans-serif}
 ::-webkit-scrollbar{width:5px;height:5px}
