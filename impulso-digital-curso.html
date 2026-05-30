@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Impulso Digital — Marketing con IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06091A;--sidebar:#0B1127;--card:#101726;--card2:#172035;
+  --gold:#F59E0B;--gold-l:#FCD34D;--teal:#0D9488;--purple:#7C3AED;
+  --coral:#F97316;--green:#10B981;--blue:#3B82F6;
+  --txt:#EEF2FF;--txt2:#94A3B8;--txt3:#475569;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --r:14px;--r-lg:20px;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Sora',sans-serif}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* ── Layout ── */
+.app{display:flex;min-height:100vh}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:268px;background:var(--sidebar);border-right:1px solid var(--border);
+  position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;
+  transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;overflow-x:hidden;
+}
+.sidebar.collapsed{transform:translateX(-100%)}
+
+.s-logo{
+  padding:24px 20px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;
+}
+.s-logo-icon{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),var(--coral));
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  box-shadow:0 0 24px rgba(245,158,11,.3);
+}
+.s-logo-txt{font-size:13px;font-weight:700;font-family:'Sora',sans-serif;line-height:1.2}
+.s-logo-sub{font-size:10px;color:var(--txt2);margin-top:2px;font-weight:400}
+
+.s-prog{padding:14px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
+.s-prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:7px}
+.s-prog-val{color:var(--gold);font-weight:700}
+.s-prog-bar{height:4px;background:var(--border2);border-radius:99px;overflow:hidden}
+.s-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--coral));transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+.s-nav{padding:10px 10px;flex:1}
+.s-label{font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase;padding:8px 10px 5px}
+.mod-btn{
+  width:100%;background:none;border:none;cursor:pointer;text-align:left;
+  padding:9px 10px;border-radius:10px;display:flex;align-items:center;gap:10px;
+  transition:all .2s;color:var(--txt2);margin-bottom:2px;
+}
+.mod-btn:hover{background:rgba(255,255,255,.05);color:var(--txt)}
+.mod-btn.act{background:rgba(245,158,11,.12);color:var(--gold)}
+.mod-btn.done{color:var(--green)}
+.mod-btn-icon{
+  width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.05);
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:.2s;
+}
+.mod-btn.act .mod-btn-icon{background:rgba(245,158,11,.2)}
+.mod-btn.done .mod-btn-icon{background:rgba(16,185,129,.15)}
+.mod-btn-info{flex:1;min-width:0}
+.mod-btn-num{font-size:9.5px;opacity:.55;margin-bottom:1px}
+.mod-btn-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Sora',sans-serif}
+.mod-btn-ck{font-size:12px;flex-shrink:0}
+
+/* ── Main ── */
+.main{margin-left:268px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(6,9,26,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;
+}
+.menu-btn{
+  background:none;border:1px solid var(--border2);color:var(--txt2);
+  width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;
+  display:none;align-items:center;justify-content:center;transition:.2s;
+}
+.menu-btn:hover{border-color:var(--gold);color:var(--gold)}
+.breadcrumb{font-size:12.5px;color:var(--txt2);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.bc-link{cursor:pointer;color:var(--gold);transition:.15s}
+.bc-link:hover{opacity:.8}
+.bc-sep{color:var(--txt3)}
+.badge{
+  background:rgba(245,158,11,.12);color:var(--gold);border:1px solid rgba(245,158,11,.22);
+  font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;
+}
+
+/* ── Content ── */
+.content{flex:1;padding:36px 36px 80px;max-width:880px}
+
+/* ── Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes slideRight{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
+.fa{animation:fadeUp .42s cubic-bezier(.4,0,.2,1) both}
+.fa1{animation-delay:.04s}.fa2{animation-delay:.08s}.fa3{animation-delay:.12s}
+.fa4{animation-delay:.16s}.fa5{animation-delay:.2s}.fa6{animation-delay:.24s}
+
+/* ── Home ── */
+.hero{padding:44px 0 36px;animation:fadeUp .5s ease both}
+.hero-eye{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);
+  border-radius:99px;padding:5px 14px;font-size:11.5px;color:var(--gold);font-weight:700;
+  margin-bottom:18px;letter-spacing:.03em;
+}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);display:inline-block;animation:pulse2 2s infinite}
+.hero-h1{font-size:40px;font-weight:800;line-height:1.15;margin-bottom:14px}
+.hero-h1 .hi{background:linear-gradient(135deg,var(--gold),var(--coral));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-p{font-size:16px;color:var(--txt2);line-height:1.72;max-width:580px;margin-bottom:28px}
+.hero-stats{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:36px}
+.stat{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:14px 18px;text-align:center;min-width:90px;transition:.25s;
+}
+.stat:hover{border-color:var(--border2);transform:translateY(-2px)}
+.stat-v{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--gold)}
+.stat-l{font-size:10.5px;color:var(--txt2);margin-top:2px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:14px}
+.mcard{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:22px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+}
+.mcard::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 55%,rgba(245,158,11,.04));
+  opacity:0;transition:.3s;pointer-events:none;
+}
+.mcard:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,.4)}
+.mcard:hover::after{opacity:1}
+.mcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.mcard-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px}
+.mcard-no{font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.05em}
+.mcard-title{font-family:'Sora',sans-serif;font-size:14.5px;font-weight:700;margin-bottom:5px;line-height:1.3}
+.mcard-sub{font-size:12px;color:var(--txt2);line-height:1.55;margin-bottom:14px}
+.mcard-foot{display:flex;justify-content:space-between;align-items:center}
+.mcard-meta{font-size:11px;color:var(--txt3);display:flex;align-items:center;gap:5px}
+.mcard-arr{font-size:16px;color:var(--txt3);transition:.25s}
+.mcard:hover .mcard-arr{color:var(--gold);transform:translateX(3px)}
+.mprog{height:3px;background:var(--border2);border-radius:99px;overflow:hidden;margin-top:12px}
+.mprog-f{height:100%;border-radius:99px;transition:width .5s ease}
+
+/* ── Module view ── */
+.mod-hdr{margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.mod-hdr-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.mod-big-ico{
+  width:56px;height:56px;border-radius:14px;display:flex;align-items:center;
+  justify-content:center;font-size:26px;flex-shrink:0;
+}
+.mod-eyebrow{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.mod-title{font-size:24px;font-weight:800;margin-bottom:6px}
+.mod-sub{font-size:14px;color:var(--txt2);line-height:1.6}
+.les-list{display:flex;flex-direction:column;gap:9px}
+.les-item{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:13px;
+  transition:all .22s cubic-bezier(.4,0,.2,1);
+}
+.les-item:hover{border-color:var(--border2);background:var(--card2);transform:translateX(4px)}
+.les-item.done-les .les-num{background:rgba(16,185,129,.2)!important;color:var(--green)!important}
+.les-num{
+  width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Sora',sans-serif;font-size:11.5px;font-weight:700;color:var(--txt2);flex-shrink:0;
+}
+.les-info{flex:1;min-width:0}
+.les-title{font-size:13.5px;font-weight:600;font-family:'Sora',sans-serif;margin-bottom:3px}
+.les-meta{font-size:11.5px;color:var(--txt3);display:flex;gap:10px}
+.les-arr{color:var(--txt3);font-size:15px;transition:.22s}
+.les-item:hover .les-arr{color:var(--gold);transform:translateX(3px)}
+
+/* ── Lesson view ── */
+.back-btn{
+  background:none;border:1px solid var(--border);color:var(--txt2);
+  padding:7px 13px;border-radius:8px;cursor:pointer;font-size:12.5px;
+  display:inline-flex;align-items:center;gap:5px;transition:.2s;margin-bottom:18px;
+  font-family:'DM Sans',sans-serif;
+}
+.back-btn:hover{border-color:var(--gold);color:var(--gold)}
+.les-tag{
+  display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;
+  padding:4px 11px;border-radius:99px;margin-bottom:11px;
+  background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.2);
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.les-h1{font-size:26px;font-weight:800;line-height:1.25;margin-bottom:9px}
+.les-desc{font-size:15px;color:var(--txt2);line-height:1.65;margin-bottom:18px}
+.les-dur{
+  display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--txt3);
+  background:var(--card);border:1px solid var(--border);padding:5px 12px;border-radius:99px;
+}
+.comp-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.22);
+  color:var(--green);padding:8px 16px;border-radius:9px;cursor:pointer;
+  font-size:12.5px;font-weight:600;font-family:'DM Sans',sans-serif;transition:.2s;
+}
+.comp-btn:hover{background:rgba(16,185,129,.18)}
+.comp-btn.done-btn{opacity:.55;cursor:default}
+
+/* ── Content blocks ── */
+.divider{height:1px;background:var(--border);margin:18px 0}
+.cb-h2{
+  font-size:17px;font-weight:700;color:var(--txt);margin:22px 0 12px;
+  display:flex;align-items:center;gap:8px;
+}
+.cb-h2::before{content:'';width:3px;height:18px;background:var(--gold);border-radius:2px;flex-shrink:0}
+.cb-h3{font-size:14.5px;font-weight:600;color:var(--txt);margin:14px 0 8px}
+.cb-p{font-size:14.5px;color:var(--txt2);line-height:1.78;margin-bottom:11px}
+.cb-ul{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.cb-ul li{font-size:14px;color:var(--txt2);line-height:1.65;padding-left:18px;position:relative}
+.cb-ul li::before{content:'›';position:absolute;left:0;color:var(--gold);font-weight:700}
+
+.cb-tbl-wrap{overflow-x:auto;margin-bottom:14px}
+.cb-tbl{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.cb-tbl th{
+  background:rgba(245,158,11,.09);color:var(--gold);font-size:10.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;padding:10px 13px;text-align:left;
+  border-bottom:1px solid var(--border);
+}
+.cb-tbl td{padding:9px 13px;font-size:13px;color:var(--txt2);border-bottom:1px solid var(--border)}
+.cb-tbl tr:last-child td{border-bottom:none}
+.cb-tbl tr:nth-child(even) td{background:rgba(255,255,255,.014)}
+
+.callout{
+  border-radius:12px;padding:14px 16px;margin-bottom:13px;
+  display:flex;gap:11px;align-items:flex-start;
+}
+.callout.tip{background:rgba(13,148,136,.09);border:1px solid rgba(13,148,136,.22)}
+.callout.warn{background:rgba(249,115,22,.09);border:1px solid rgba(249,115,22,.22)}
+.callout.imp{background:rgba(245,158,11,.09);border:1px solid rgba(245,158,11,.22)}
+.callout.info{background:rgba(124,58,237,.09);border:1px solid rgba(124,58,237,.22)}
+.callout-ico{font-size:17px;flex-shrink:0;margin-top:1px}
+.callout-txt{font-size:13.5px;line-height:1.65;color:var(--txt2)}
+.callout.tip .callout-txt{color:rgba(94,234,212,.92)}
+.callout.warn .callout-txt{color:rgba(253,186,116,.92)}
+.callout.imp .callout-txt{color:rgba(253,211,77,.92)}
+.callout.info .callout-txt{color:rgba(196,181,253,.92)}
+
+.cb-flow{
+  background:#0A0E1F;border:1px solid var(--border2);border-radius:12px;
+  padding:16px 18px;font-family:'DM Mono',monospace;font-size:12px;
+  color:#A5F3FC;line-height:1.8;overflow-x:auto;white-space:pre-wrap;
+  word-break:break-word;margin-bottom:13px;
+}
+
+.cb-prompt{
+  background:#08091F;border:1px solid rgba(124,58,237,.3);border-radius:12px;
+  padding:16px 18px;margin-bottom:13px;position:relative;overflow:hidden;
+}
+.cb-prompt::before{
+  content:'PROMPT IA';position:absolute;top:10px;right:12px;
+  font-size:8.5px;font-weight:700;color:rgba(196,181,253,.5);letter-spacing:.09em;
+}
+.cb-prompt-txt{
+  font-family:'DM Mono',monospace;font-size:12.5px;color:rgba(196,181,253,.92);
+  line-height:1.72;white-space:pre-wrap;word-break:break-word;
+}
+
+.cb-ex{
+  background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);
+  border-radius:12px;padding:16px 18px;margin-bottom:13px;
+}
+.cb-ex-lbl{font-size:10.5px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.cb-ex-txt{font-size:13.5px;color:rgba(167,243,208,.88);line-height:1.65}
+
+.checklist{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}
+.chk{
+  display:flex;align-items:flex-start;gap:9px;font-size:13.5px;color:var(--txt2);
+  padding:9px 13px;background:var(--card);border:1px solid var(--border);
+  border-radius:9px;cursor:pointer;transition:.18s;line-height:1.55;
+}
+.chk:hover{border-color:var(--border2);background:var(--card2)}
+.chk.chk-on{border-color:rgba(16,185,129,.28);background:rgba(16,185,129,.06);color:rgba(167,243,208,.85)}
+.chk-box{
+  width:19px;height:19px;border-radius:5px;border:2px solid var(--txt3);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:.18s;margin-top:1px;font-size:10px;
+}
+.chk.chk-on .chk-box{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ── Quiz ── */
+.quiz-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:22px;margin-bottom:14px;
+}
+.quiz-n{font-size:10.5px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px}
+.quiz-q{font-size:15px;font-weight:600;font-family:'Sora',sans-serif;margin-bottom:14px;line-height:1.45}
+.quiz-btn{
+  background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.22);
+  color:var(--gold);padding:7px 16px;border-radius:8px;cursor:pointer;
+  font-size:12.5px;font-weight:600;font-family:'DM Sans',sans-serif;transition:.18s;
+}
+.quiz-btn:hover{background:rgba(245,158,11,.18)}
+.quiz-ans{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);animation:fadeUp .3s ease both}
+
+/* ── Nav buttons ── */
+.les-nav{display:flex;gap:10px;margin-top:36px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-b{
+  flex:1;padding:12px 18px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);color:var(--txt2);cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;
+  transition:.22s;display:flex;align-items:center;gap:7px;
+}
+.nav-b:hover{border-color:var(--border2);color:var(--txt);background:var(--card2)}
+.nav-b.prim{
+  background:linear-gradient(135deg,var(--gold),var(--coral));
+  border-color:transparent;color:#000;font-weight:700;
+}
+.nav-b.prim:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 8px 28px rgba(245,158,11,.3)}
+.nav-b-r{margin-left:auto;justify-content:flex-end}
+
+/* ── Overlay ── */
+.overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.overlay.show{display:block;animation:fadeIn .2s ease both}
+
+/* ── Responsive ── */
+@media(max-width:820px){
+  .main{margin-left:0}
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.sidebar-open{transform:translateX(0)}
+  .menu-btn{display:flex}
+  .content{padding:20px 18px 60px}
+  .hero-h1{font-size:26px}
+  .grid{grid-template-columns:1fr}
+  .les-nav{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="s-logo" onclick="navigate('home')">
+      <div class="s-logo-icon">🚀</div>
+      <div>
+        <div class="s-logo-txt">Impulso Digital</div>
+        <div class="s-logo-sub">Marketing con IA · Curso completo</div>
+      </div>
+    </div>
+    <div class="s-prog">
+      <div class="s-prog-row">
+        <span>Progreso general</span>
+        <span class="s-prog-val" id="prog-pct">0%</span>
+      </div>
+      <div class="s-prog-bar"><div class="s-prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <nav class="s-nav">
+      <div class="s-label">Módulos del curso</div>
+      <div id="mod-nav"></div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <div class="breadcrumb" id="breadcrumb">
+          <span class="bc-link" onclick="navigate('home')">Inicio</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="badge" id="badge-count">0/40 lecciones</div>
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+const MODS = [
+  {id:"m1",icon:"📅",num:"01",title:"Plan de Aprendizaje 20 Horas",sub:"El 20% que genera el 80% de resultados",accent:"#F59E0B",
+   lessons:[
+    {id:"m1-l1",title:"Sesión 1: Ecosistema de Herramientas IA",dur:"2 horas",icon:"🛠️",
+     desc:"Entiende qué hace cada herramienta y cómo se conectan entre sí para crear tu base de operaciones.",
+     blocks:[
+      {t:"h",text:"Objetivo de la sesión"},
+      {t:"p",text:"El error más común del principiante es acumular herramientas sin saber para qué sirve cada una. Antes de tocar un solo anuncio o publicar un post, necesitas tener claro el ecosistema completo."},
+      {t:"h",text:"El ecosistema completo de herramientas"},
+      {t:"tbl",heads:["Herramienta","Para qué sirve","Costo"],rows:[
+        ["ChatGPT / Gemini","Investigación, copies, guiones, emails","Gratis"],
+        ["Canva AI","Diseño de piezas visuales y videos cortos","$13 USD/mes"],
+        ["CapCut","Edición de Reels con subtítulos automáticos","Gratis"],
+        ["Metricool","Programación y analítica de redes sociales","Gratis (básico)"],
+        ["Mailchimp","Email marketing automatizado","Gratis hasta 500 contactos"],
+        ["Google Analytics 4","Comportamiento de usuarios en tu web","Gratis"],
+        ["Meta Ads Manager","Publicidad pagada con IA predictiva","Desde $5/día"]
+      ]},
+      {t:"callout",v:"imp",ico:"⚡",text:"Regla de oro: domina una herramienta antes de agregar otra. Canva + ChatGPT + Metricool son suficientes para el primer mes completo."},
+      {t:"h",text:"Recursos recomendados"},
+      {t:"ul",items:["Video: 'Herramientas de IA para Marketing 2024' — Vilma Núñez (YouTube)","Guía de bienvenida de HubSpot Academia en español (gratuita)","Canal oficial de Canva en Español: tutoriales de todas las funciones IA"]},
+      {t:"ex",text:"Crea cuentas gratuitas en las 7 herramientas de la tabla. Luego escribe en una hoja: ¿Qué problema resuelve Impulso Digital? ¿A quién? ¿Por qué alguien te elegiría a ti y no a otro? Este perfil será el insumo base para todas las sesiones siguientes."}
+    ]},
+    {id:"m1-l2",title:"Sesión 2: Investigación de Cliente Ideal con IA",dur:"2 horas",icon:"🔍",
+     desc:"Construye el perfil de tu cliente ideal usando ChatGPT como investigador de mercado 24/7.",
+     blocks:[
+      {t:"h",text:"¿Por qué importa este paso primero?"},
+      {t:"p",text:"La IA no conoce a tu cliente. Tú tampoco lo conoces bien todavía. Pero juntos pueden construir una hipótesis sólida que guíe cada decisión de contenido y publicidad. Sin perfil de cliente, todo lo que genera la IA es genérico."},
+      {t:"h",text:"Prompt base para construir el perfil"},
+      {t:"prompt",text:`"Actúa como investigador de mercado especializado en emprendimientos latinoamericanos. Mi proyecto se llama Impulso Digital y [describe tu producto/servicio en 2 líneas]. Mi público objetivo tiene entre 25 y 45 años, vive en [país/ciudad], y su problema principal es [problema]. Crea un perfil detallado de mi cliente ideal que incluya: datos demográficos, motivaciones profundas, miedos y frustraciones, qué busca en Google antes de comprar, qué palabras usa para describir su problema, y en qué redes sociales pasa más tiempo."`},
+      {t:"callout",v:"warn",ico:"⚠️",text:"ChatGPT puede inventar estadísticas ('el 73% de los usuarios latinoamericanos…'). Nunca uses esos números sin verificarlos en fuentes primarias. Úsalos solo como hipótesis de trabajo."},
+      {t:"ex",text:"Ejecuta el prompt con los datos reales de Impulso Digital. Guarda el resultado en un documento llamado 'Mi Cliente Ideal v1'. Lo usarás como insumo en todas las sesiones siguientes."}
+    ]},
+    {id:"m1-l3",title:"Sesión 3: Estrategia de Contenidos con IA",dur:"2 horas",icon:"✍️",
+     desc:"Crea un calendario de 30 días de contenidos en menos de 2 horas con IA generativa.",
+     blocks:[
+      {t:"h",text:"Los 4 tipos de contenido que necesitas cada semana"},
+      {t:"tbl",heads:["Tipo","Propósito","Frecuencia"],rows:[
+        ["Educativo","Resuelve un problema real del cliente","2 por semana"],
+        ["Conexión humana","Historia, proceso, detrás de cámaras","1 por semana"],
+        ["Prueba social","Testimonios, resultados, casos","1 por semana"],
+        ["Venta directa","Oferta clara, sin disculpas","1 por semana"]
+      ]},
+      {t:"h",text:"Prompt para generar el calendario completo"},
+      {t:"prompt",text:`"Dame 20 ideas de contenido para Instagram sobre [tu tema] que resuelvan problemas reales de [descripción de tu cliente ideal]. Clasifícalas por tipo: educativo, entretenimiento, caso de éxito, venta directa."`},
+      {t:"h",text:"Prompt para escribir cada post"},
+      {t:"prompt",text:`"Escribe un post de Instagram para [idea seleccionada]. Tono: [cercano/profesional/motivador]. Incluye: un gancho en la primera línea que genere curiosidad, desarrollo en 3 puntos breves, y una llamada a la acción que invite a comentar. Máximo 150 palabras."`},
+      {t:"callout",v:"tip",ico:"💡",text:"La IA es el borrador, vos sos el editor. Siempre ajusta el tono para que suene como vos, no como un manual corporativo. Ese ajuste manual es lo que diferencia tu contenido del de todos los demás."},
+      {t:"ex",text:"Genera el calendario de las próximas 2 semanas. Elige 10 ideas del prompt de 20, asigna tipo y fecha. No necesitas escribir los posts todavía — solo el plan completo con fechas."}
+    ]},
+    {id:"m1-l4",title:"Sesión 4: SEO Básico Potenciado con IA",dur:"2 horas",icon:"🔎",
+     desc:"Haz que Google encuentre Impulso Digital de forma orgánica y sostenida sin pagar un peso.",
+     blocks:[
+      {t:"h",text:"Las 3 acciones que representan el 80% del SEO"},
+      {t:"ul",items:["Investigar palabras clave con intención de búsqueda real (no solo volumen)","Optimizar cada pieza de contenido: título, metadescripción, URL limpia","Registrar y configurar Google Search Console (gratis, esencial)"]},
+      {t:"h",text:"Prompt para investigación de keywords"},
+      {t:"prompt",text:`"Soy dueño de [tipo de negocio] en [país]. Mi cliente ideal busca en Google frases relacionadas con [problema que resuelves]. Dame 15 palabras clave de cola larga con intención de compra o aprendizaje, que un emprendimiento nuevo podría posicionar en 6 meses. Clasifícalas por intención: informativa, comercial, transaccional."`},
+      {t:"h",text:"Checklist SEO por página (mínimo indispensable)"},
+      {t:"chk",items:["Título con keyword principal (máx. 60 caracteres)","Metadescripción que invita al clic (máx. 155 caracteres)","URL corta y descriptiva sin caracteres especiales","Al menos un subtítulo H2 con variación de la keyword","Imagen con atributo ALT descriptivo y con keyword"]},
+      {t:"callout",v:"warn",ico:"⚠️",text:"Sobreoptimización: repetir la keyword cada 2 párrafos es penalizado por Google desde la actualización Helpful Content 2023. Menciona la keyword 2-3 veces naturalmente y usa sinónimos el resto del tiempo."}
+    ]},
+    {id:"m1-l5",title:"Sesión 5: Meta Ads con Advantage+ IA",dur:"2 horas",icon:"📣",
+     desc:"Activa tu primera campaña inteligente con la IA de Meta y presupuesto controlado desde el día uno.",
+     blocks:[
+      {t:"h",text:"Estructura de campaña recomendada para principiantes"},
+      {t:"flow",text:`CAMPAÑA
+└── Objetivo: Tráfico o Conversiones (no Reconocimiento de marca)
+    Presupuesto: mínimo $5 USD/día
+
+    CONJUNTO DE ANUNCIOS
+    └── Audiencia: Advantage+ Audience (IA activa)
+        Ubicaciones: Automáticas
+
+        ANUNCIOS (siempre 3 variantes)
+        ├── Variante A: Copy enfocado en el PROBLEMA
+        ├── Variante B: Copy enfocado en el BENEFICIO
+        └── Variante C: Copy con PRUEBA SOCIAL`},
+      {t:"h",text:"Prompt para generar los 3 copies del anuncio"},
+      {t:"prompt",text:`"Crea 3 variantes de copy para un anuncio de Facebook. Producto: [describe tu oferta]. Público: [describe tu cliente ideal]. Objetivo: que hagan clic al sitio web. V1: enfocada en el miedo o problema. V2: enfocada en el beneficio o transformación. V3: enfocada en prueba social. Máximo 90 palabras por variante. Llamada a la acción clara en cada una."`},
+      {t:"callout",v:"warn",ico:"🚫",text:"No cambies la campaña antes de los 7 días. Meta tiene una fase de aprendizaje que requiere ~50 eventos de optimización. Si interrumpes antes, el algoritmo reinicia y quemas presupuesto."},
+      {t:"chk",items:["Píxel de Meta instalado y verificado en mi web","3 variantes de copy generadas con ChatGPT","3 creatividades diseñadas en Canva AI","Advantage+ Audience activado en el conjunto de anuncios","Presupuesto mínimo $5/día por 7 días sin modificaciones"]}
+    ]},
+    {id:"m1-l6",title:"Sesión 6: Email Marketing Automatizado con IA",dur:"2 horas",icon:"📧",
+     desc:"Construye la secuencia de 3 emails que convierte suscriptores en clientes mientras duermes.",
+     blocks:[
+      {t:"h",text:"El flujo mínimo viable: 3 emails, 5 días"},
+      {t:"tbl",heads:["Email","Cuándo se envía","Objetivo"],rows:[
+        ["1 — Bienvenida","Inmediatamente al suscribirse","Entregar el recurso prometido + presentarte en 3 líneas"],
+        ["2 — Valor puro","2 días después","1 tip accionable que demuestre que sabes de lo que hablas"],
+        ["3 — Oferta","4 días después","Historia + presentación de la solución + CTA con urgencia real"]
+      ]},
+      {t:"h",text:"Prompt para generar la secuencia completa"},
+      {t:"prompt",text:`"Escribe una secuencia de 3 emails de bienvenida para nuevos suscriptores de [Impulso Digital]. Tono: [cercano, profesional, motivador]. Producto/servicio: [describe]. Recurso que reciben al suscribirse: [describe]. Email 1: bienvenida y entrega del recurso. Email 2: tip de valor sobre [tema relevante]. Email 3: presentación de la oferta principal sin sonar vendedor. Cada email máximo 200 palabras, asunto incluido."`},
+      {t:"callout",v:"tip",ico:"💡",text:"El email tiene el ROI más alto de todos los canales: $36 de retorno por cada $1 invertido. Y con IA puedes construir flujos automáticos complejos en pocas horas."},
+      {t:"ex",text:"Ejecuta el prompt y genera los 3 emails completos. Revísalos ajustando el tono a tu voz real. Configura el flujo en Mailchimp aunque no lo actives todavía — el objetivo es dejar la infraestructura lista."}
+    ]},
+    {id:"m1-l7",title:"Sesión 7: Google Analytics 4 + Looker Studio",dur:"2 horas",icon:"📊",
+     desc:"Lee los datos reales y toma decisiones basadas en evidencia, no en intuición.",
+     blocks:[
+      {t:"h",text:"Las 5 métricas que importan en GA4 (y solo estas al inicio)"},
+      {t:"tbl",heads:["Métrica","Qué te dice","Señal de alarma"],rows:[
+        ["Usuarios activos","Cuánta gente real visita tu sitio","Caída >20% en 2 semanas"],
+        ["Tasa de participación","Si la gente se queda o sale inmediatamente","Por debajo del 40%"],
+        ["Páginas por sesión","Si navegan o solo ven una página y se van","Menos de 1.5 páginas"],
+        ["Conversiones","Si completan la acción que quieres","Cero conversiones en 7 días"],
+        ["Fuente de tráfico","De dónde vienen: Google, Instagram, email","Una fuente domina >80%"]
+      ]},
+      {t:"h",text:"Usar IA para interpretar tus datos de GA4"},
+      {t:"prompt",text:`"Estos son los datos de mi sitio web de los últimos 30 días: [pega los datos]. Soy dueño de [describe tu negocio]. Analiza estos resultados e identifica: qué está funcionando bien, qué tiene problemas urgentes, y dame 3 acciones concretas para mejorar el mes que viene."`},
+      {t:"callout",v:"tip",ico:"📈",text:"Conectar GA4 con Looker Studio es gratuito y toma 10 minutos. El resultado es un dashboard en tiempo real que podés compartir con colaboradores sin que accedan a tu cuenta de Google."}
+    ]},
+    {id:"m1-l8",title:"Sesión 8: Imágenes y Videos con IA",dur:"2 horas",icon:"🎨",
+     desc:"Produce contenido visual profesional sin necesidad de diseñador ni camarógrafo.",
+     blocks:[
+      {t:"h",text:"Para imágenes estáticas — Canva AI"},
+      {t:"ul",items:["Magic Design: describes lo que necesitas y Canva genera una propuesta completa","Text to Image: generas ilustraciones personalizadas para tus posts","Magic Write: genera copies directamente dentro del diseño","Background Remover: elimina fondos de fotos en 1 clic automático"]},
+      {t:"h",text:"Para videos cortos — CapCut con IA"},
+      {t:"ul",items:["Auto Captions: subtítulos automáticos en español de alta precisión","AI Script: genera el guión del video antes de grabarlo","Auto Cut: elimina silencios y partes innecesarias automáticamente","Text to Video: convierte un guión escrito en video animado"]},
+      {t:"h",text:"Flujo semanal de producción visual (90 min/semana)"},
+      {t:"flow",text:`LUNES (45 min)
+→ Canva AI: genera 5 diseños para los posts de la semana
+
+MIÉRCOLES (30 min)
+→ CapCut: graba y edita 1 Reel (no tiene que ser perfecto)
+
+VIERNES (15 min)
+→ Metricool: programa todo el contenido con los mejores horarios`},
+      {t:"ex",text:"Crea hoy un diseño completo para un post usando Canva AI. No lo diseñes manualmente: describe lo que necesitas con texto y deja que la IA lo genere. Ajusta solo lo que no encaje con tu identidad de marca (colores, tipografía, tono visual)."}
+    ]},
+    {id:"m1-l9",title:"Sesión 9: Flujo Semanal Integrado",dur:"2 horas",icon:"⚙️",
+     desc:"Conecta todas las herramientas en un sistema ejecutable en 3 horas por semana.",
+     blocks:[
+      {t:"h",text:"El sistema semanal completo de Impulso Digital"},
+      {t:"flow",text:`LUNES (45 min)
+→ ChatGPT: genera 5 ideas de contenido para la semana
+→ ChatGPT: escribe los copies de los 5 posts
+→ Canva AI: diseña las 5 piezas visuales
+
+MARTES (30 min)
+→ Metricool: programa los 5 posts en los mejores horarios
+→ Revisar métricas de la semana anterior (solo las 5 que importan)
+
+MIÉRCOLES (30 min)
+→ CapCut: grabar y editar 1 Reel o video corto
+→ Programar el video en Metricool
+
+JUEVES (30 min)
+→ Meta Ads: revisar variantes activas
+→ Pausar la más débil · crear una alternativa nueva
+
+VIERNES (45 min)
+→ GA4: revisar conversiones de la semana
+→ ChatGPT: analizar datos y planear ajustes para la próxima semana
+
+TOTAL: 3 horas por semana · Sistema completo funcionando`},
+      {t:"callout",v:"tip",ico:"🗓️",text:"Herramienta de orquestación: Notion o Google Sheets. Una tabla con columnas: Fecha / Tipo / Copy / Estado / Métricas. Te permite ver el sistema completo de un vistazo y nunca perder el hilo del progreso."}
+    ]},
+    {id:"m1-l10",title:"Sesión 10: Evaluación y Plan 90 Días",dur:"2 horas",icon:"🎯",
+     desc:"Mide qué funcionó, corrige lo que no, y traza el plan del próximo trimestre.",
+     blocks:[
+      {t:"h",text:"Metas realistas para el primer trimestre de Impulso Digital"},
+      {t:"tbl",heads:["Métrica","Mes 1","Mes 2","Mes 3"],rows:[
+        ["Seguidores Instagram","0 → 300","300 → 600","600 → 1.000"],
+        ["Engagement rate","—",">5%",">5%"],
+        ["Suscriptores email","0 → 100","100 → 250","250 → 500"],
+        ["Costo por lead","<$2 USD","<$1.5 USD","<$1 USD"],
+        ["Tráfico web/mes","200 sesiones","500 sesiones","1.000 sesiones"]
+      ]},
+      {t:"h",text:"Prompt de evaluación mensual"},
+      {t:"prompt",text:`"Estos son los resultados de mi primer mes en marketing digital para Impulso Digital: [pega todos tus datos]. Analiza qué estrategias funcionaron mejor, qué debo eliminar o reducir, qué debo escalar, y dame un plan de 4 semanas para el mes siguiente con acciones específicas y métricas objetivo."`},
+      {t:"callout",v:"imp",ico:"🏁",text:"El enfoque es lo que diferencia al emprendedor que crece del que hace mucho y no avanza. Escoge UNA sola métrica prioritaria para este mes. Una. No siete. El enfoque genera resultados; la dispersión genera estrés sin progreso."}
+    ]}
+  ]},
+
+  {id:"m2",icon:"📋",num:"02",title:"Guía Resumen de Una Página",sub:"Todo el sistema revisable en 5 minutos",accent:"#0D9488",
+   lessons:[
+    {id:"m2-l1",title:"Herramientas Esenciales del Ecosistema",dur:"10 min",icon:"🧰",
+     desc:"Las 7 herramientas que conforman tu stack completo de marketing digital con IA.",
+     blocks:[
+      {t:"tbl",heads:["Herramienta","Función principal","Cuándo usarla"],rows:[
+        ["ChatGPT","Copies, emails, guiones, investigación de cliente","Siempre: es el núcleo del sistema"],
+        ["Canva Pro AI","Diseños, videos, presentaciones con IA","Producción visual diaria"],
+        ["CapCut","Edición de Reels con subtítulos y cortes automáticos","Producción de video semanal"],
+        ["Metricool","Programación centralizada + analítica de redes","Publicación y revisión semanal"],
+        ["Mailchimp","Email marketing automatizado con segmentación","Configuración + monitoreo mensual"],
+        ["Google Analytics 4","Comportamiento real de usuarios en tu web","Revisión semanal de conversiones"],
+        ["Meta Ads Manager","Publicidad pagada con IA predictiva Advantage+","Campañas activas + A/B testing"]
+      ]},
+      {t:"callout",v:"imp",ico:"⚡",text:"Domina una herramienta antes de agregar otra. Canva + ChatGPT + Metricool son suficientes para el primer mes. El dominio superficial de 12 herramientas produce resultados superficiales."}
+    ]},
+    {id:"m2-l2",title:"Los 4 Pilares de Ejecución",dur:"15 min",icon:"🏛️",
+     desc:"Los cuatro pilares interdependientes que sostienen cualquier estrategia digital exitosa.",
+     blocks:[
+      {t:"h",text:"Pilar 1 — Contenido de valor"},
+      {t:"ul",items:["La IA genera el borrador. Tú pones el criterio y el tono de marca.","Fórmula: ChatGPT escribe → tú editas → Canva diseña → Metricool publica","Frecuencia mínima viable: 5 posts por semana sin excepciones","Mezcla: 40% educativo · 20% conexión humana · 20% prueba social · 20% venta"]},
+      {t:"h",text:"Pilar 2 — SEO on-page con IA"},
+      {t:"ul",items:["Cada página: título con keyword + metadescripción + URL limpia","ChatGPT genera títulos y metadescripciones optimizadas en 2 minutos","Google Search Console (gratis) para ver qué búsquedas te encuentran","Resultados orgánicos sostenidos a partir del mes 3-4 de publicación consistente"]},
+      {t:"h",text:"Pilar 3 — Meta Ads con Advantage+ IA"},
+      {t:"ul",items:["Advantage+ Audience: la IA de Meta encuentra tu público sin segmentación manual","Lanza siempre 3 variantes: problema · beneficio · prueba social","Presupuesto mínimo para aprender: $5/día por 7 días sin tocar nada","Mide costo por resultado, no likes ni impresiones del anuncio"]},
+      {t:"h",text:"Pilar 4 — Email marketing automatizado"},
+      {t:"ul",items:["Flujo mínimo: Bienvenida → Valor → Oferta (3 emails, 5 días automáticos)","Segmentación: separa quienes abren emails de quienes no — envía diferente a cada grupo","Genera los 3 emails con ChatGPT en menos de 20 minutos","Tasa de apertura objetivo: >25% · Tasa de clic objetivo: >3%"]}
+    ]},
+    {id:"m2-l3",title:"Flujo de Trabajo Semanal",dur:"10 min",icon:"🔄",
+     desc:"El sistema de 3 horas semanales que mantiene vivo y creciendo Impulso Digital.",
+     blocks:[
+      {t:"flow",text:`LUNES · 45 min
+→ ChatGPT: 5 ideas + 5 copies completos
+→ Canva AI: 5 piezas visuales listas
+
+MARTES · 30 min
+→ Metricool: programar los 5 posts
+→ Revisar métricas de la semana anterior
+
+MIÉRCOLES · 30 min
+→ CapCut: grabar y editar 1 Reel
+→ Programar el video en Metricool
+
+JUEVES · 30 min
+→ Meta Ads: revisar variantes activas
+→ Pausar débiles · crear alternativa nueva
+
+VIERNES · 45 min
+→ GA4: revisar conversiones de la semana
+→ ChatGPT: análisis de datos + plan siguiente semana
+
+      ↓              ↓              ↓
+ CREAR CON IA    DISTRIBUIR       MEDIR
+(ChatGPT+Canva) (Metricool+Meta)  (GA4)`},
+      {t:"callout",v:"tip",ico:"⏱️",text:"Este sistema completo funciona con 3 horas por semana. No requiere equipo, no requiere agencia, no requiere presupuesto millonario. Requiere consistencia y criterio humano sobre cada pieza que genera la IA."}
+    ]},
+    {id:"m2-l4",title:"Las 4 Métricas que Importan",dur:"10 min",icon:"📈",
+     desc:"Las únicas métricas que necesitas monitorear para tomar decisiones correctas.",
+     blocks:[
+      {t:"tbl",heads:["Métrica","Dónde medirla","Señal de alarma","Acción"],rows:[
+        ["Tráfico orgánico","GA4 → Adquisición","Caída >20% en 2 semanas","Revisar Search Console + actualizaciones Google"],
+        ["Tasa de apertura email","Mailchimp","Por debajo del 20%","Testear asuntos de email + limpiar lista"],
+        ["Costo por resultado","Meta Ads Manager","Sube >50% en 3 días","Revisar creatividades + frecuencia de anuncio"],
+        ["ROAS","Meta Ads Manager","Por debajo de 2x","Mejorar página de destino o copy del anuncio"]
+      ]},
+      {t:"callout",v:"warn",ico:"🚫",text:"Lo que NO mides al inicio: seguidores totales, likes, impresiones, alcance. Son métricas de vanidad. Un post con 500 likes y 0 conversiones tiene resultado de negocio = cero. Mides conversiones y costo siempre."}
+    ]},
+    {id:"m2-l5",title:"Errores Comunes + Prompt de Emergencia",dur:"10 min",icon:"❌",
+     desc:"Los 5 errores que frenan a la mayoría y el prompt que resuelve el bloqueo de contenido.",
+     blocks:[
+      {t:"h",text:"Los 5 errores que frenan el crecimiento"},
+      {t:"ul",items:[
+        "❌ No entrenar la IA con tu tono de marca → siempre incluir: 'Usa este tono: [descripción]. Estas son 3 frases que yo usaría: [ejemplos reales]'",
+        "❌ Ignorar la segmentación → preguntarse siempre: ¿esto está escrito para UNA persona específica o para todo el mundo?",
+        "❌ No hacer A/B testing → lanzar siempre 2 versiones de cada anuncio y email; sin variantes no hay aprendizaje posible",
+        "❌ Confundir likes con ventas → configurar al menos 1 conversión en GA4 (registro, compra, clic a WhatsApp)",
+        "❌ Publicar sin revisar el copy → la IA puede inventar datos, hacer promesas exageradas y usar tono robótico"
+      ]},
+      {t:"h",text:"Prompt de emergencia — cuando no sabes qué publicar"},
+      {t:"prompt",text:`"Soy dueño de [Impulso Digital / describe tu negocio]. Mi cliente ideal es [descripción]. Hoy no sé qué publicar. Dame 5 ideas de contenido para Instagram que resuelvan un problema real de mi audiencia, generen conversación en comentarios, y no suenen a publicidad. Para cada idea: dame el gancho de la primera línea, el desarrollo en 3 puntos y una llamada a la acción clara."`}
+    ]}
+  ]},
+
+  {id:"m3",icon:"🧪",num:"03",title:"Ponte a Prueba Hasta Fallar",sub:"10 preguntas de dificultad progresiva",accent:"#7C3AED",
+   lessons:[
+    {id:"m3-l1",title:"Preguntas Nivel Principiante (1-2)",dur:"20 min",icon:"🌱",
+     desc:"Evalúa tu comprensión de los fundamentos: prompts efectivos y elementos de un buen post.",
+     blocks:[
+      {t:"quiz",num:"Pregunta 1 · Principiante",q:"¿Qué diferencia hay entre un prompt genérico y un prompt efectivo para marketing?",
+       ans:[
+        {t:"h",text:"Un prompt efectivo incluye obligatoriamente:"},
+        {t:"ul",items:["Contexto del negocio: quién eres, qué haces, para quién exactamente","Descripción del cliente ideal: edad, problema, frustración específica","Tono definido con referencia concreta: 'como un amigo experto', no 'profesional'","Estructura solicitada: gancho + desarrollo + cierre + CTA","Límite de palabras: la IA escribe tanto como le dejes sin acotarla"]},
+        {t:"callout",v:"warn",ico:"⚠️",text:"Matiz clave: la IA no tiene memoria entre conversaciones. Si no incluyes el contexto en CADA prompt, genera contenido genérico que podría ser de cualquier marca del planeta. El contexto no es opcional."}
+       ]},
+      {t:"quiz",num:"Pregunta 2 · Principiante",q:"¿Cuáles son los 3 elementos que determinan si un post de Instagram va a funcionar, antes de publicarlo?",
+       ans:[
+        {t:"ul",items:[
+          "El gancho (primera línea): el 90% decide en 1 segundo si sigue leyendo o hace scroll. Debe generar curiosidad, identificar un dolor, hacer una promesa específica o contradecir una creencia común.",
+          "La llamada a la acción (CTA): ¿qué quieres que haga quien lee? Si no lo dices explícitamente, no lo harán. 'Comenta tu opinión', 'Guarda este post' o 'Escríbeme por DM' son CTAs que generan comportamiento medible.",
+          "La relevancia para una persona específica: el contenido que habla de todo no conecta con nadie. Si estás escribiendo para todo el mundo, no estás escribiendo para nadie."
+        ]},
+        {t:"callout",v:"tip",ico:"💡",text:"Los hashtags no son un factor determinante del alcance desde 2022. Instagram y TikTok priorizan la retención sobre los hashtags. Un buen gancho vale infinitamente más que 30 hashtags perfectos."}
+       ]}
+    ]},
+    {id:"m3-l2",title:"Preguntas Nivel Intermedio (3-5)",dur:"30 min",icon:"🌿",
+     desc:"Meta Ads, email marketing y SEO con IA en profundidad.",
+     blocks:[
+      {t:"quiz",num:"Pregunta 3 · Intermedio",q:"¿Cómo configurarías una campaña de Meta Ads con Advantage+ para Impulso Digital con $150 USD de presupuesto mensual?",
+       ans:[
+        {t:"flow",text:`CAMPAÑA
+Objetivo: Tráfico o Conversiones (no Reconocimiento de marca)
+└── Presupuesto: $5/día = $150/mes
+
+    CONJUNTO DE ANUNCIOS
+    └── Audiencia: Advantage+ Audience ACTIVADO
+        Ubicaciones: Automáticas (la IA decide dónde)
+
+        ANUNCIOS (3 variantes obligatorias)
+        ├── Variante A: Copy enfocado en el PROBLEMA del cliente
+        ├── Variante B: Copy enfocado en el BENEFICIO obtenido
+        └── Variante C: Copy con TESTIMONIO o prueba social`},
+        {t:"callout",v:"warn",ico:"⚠️",text:"No cambiar la campaña en los primeros 7 días. Meta tiene una fase de aprendizaje que requiere ~50 eventos de optimización. Interrumpir antes reinicia el proceso y desperdicia el presupuesto invertido."}
+       ]},
+      {t:"quiz",num:"Pregunta 4 · Intermedio",q:"¿Qué es la tasa de apertura en email, por qué puede ser engañosa, y cómo sabrías si tus emails realmente funcionan?",
+       ans:[
+        {t:"p",text:"Desde 2021, Apple Mail Privacy Protection precarga automáticamente las imágenes de rastreo de los emails (las que usa Mailchimp para detectar aperturas) aunque el usuario no haya abierto el email. Esto infla artificialmente las tasas de apertura."},
+        {t:"h",text:"Las métricas que no mienten en email marketing:"},
+        {t:"tbl",heads:["Métrica","Por qué es confiable"],rows:[
+          ["Tasa de clics (CTR)","Requiere acción real del usuario, no se puede falsear automáticamente"],
+          ["Tasa de conversión","Mide si completaron la acción objetivo después del clic"],
+          ["Respuestas directas","La señal de engagement más fuerte posible en email"],
+          ["Cancelaciones de suscripción","Si suben tras ciertos emails, algo falla en contenido o frecuencia"]
+        ]}
+       ]},
+      {t:"quiz",num:"Pregunta 5 · Intermedio",q:"¿Cuáles son los 3 pasos para crear contenido SEO con IA sin cometer el error de sobreoptimización?",
+       ans:[
+        {t:"ul",items:[
+          "Paso 1 — Investigar intención de búsqueda (no solo volumen): 'cómo empezar con marketing digital sin dinero' es posicionable; 'marketing digital' no lo es para un sitio nuevo.",
+          "Paso 2 — Estructurar el artículo con IA: título H1 + metadescripción + 4 subtítulos H2 + introducción que responde directamente + FAQ al final.",
+          "Paso 3 — Escribir para personas, no para robots: la IA tiende a sobreoptimizar. Reescribe en tu propia voz después de que la IA genere el borrador. Google premia el contenido útil, no el optimizado."
+        ]},
+        {t:"callout",v:"warn",ico:"⚠️",text:"Sobreoptimización clásica: keyword en el título, en los primeros 100 caracteres, en 3 subtítulos, y 8 veces en el cuerpo. Google lo detecta como spam desde Helpful Content 2023. Máximo 2-3 menciones naturales más variaciones semánticas."}
+       ]}
+    ]},
+    {id:"m3-l3",title:"Preguntas Nivel Avanzado (6-8)",dur:"40 min",icon:"🌳",
+     desc:"Diagnóstico de GA4, reactivación de listas de email y distribución de presupuesto.",
+     blocks:[
+      {t:"quiz",num:"Pregunta 6 · Avanzado",q:"En GA4 detectas una caída del 35% en tráfico orgánico en 14 días. ¿Cuál es tu proceso de diagnóstico usando IA?",
+       ans:[
+        {t:"ul",items:[
+          "Paso 1 — Confirmar que no es error de medición: verificar Tag Assistant, rango de fechas correcto, cambios recientes en el sitio web",
+          "Paso 2 — Identificar qué páginas cayeron: GA4 → Participación → Páginas → comparar períodos",
+          "Paso 3 — Google Search Console: ¿cayeron impresiones Y clics juntos? (actualización algoritmo) ¿Solo los clics? (CTR bajo, problema de título/meta)",
+          "Paso 4 — Verificar si coincide con actualización de Google: buscar 'Google algorithm update [mes y año]' en Google",
+          "Paso 5 — ChatGPT con todos los datos: 'Analiza estos resultados, identifica causas probables y dame plan de recuperación de 30 días'"
+        ]},
+        {t:"callout",v:"tip",ico:"💡",text:"Una caída por actualización de algoritmo no se recupera en días. Google tarda semanas en recrawlear y recalibrar. La respuesta correcta no es entrar en pánico y cambiar todo: es mejorar la calidad del contenido afectado y esperar."}
+       ]},
+      {t:"quiz",num:"Pregunta 7 · Avanzado",q:"¿Cómo diseñarías una secuencia de email para recuperar suscriptores inactivos por 60 días?",
+       ans:[
+        {t:"tbl",heads:["Email","Asunto","Objetivo del email"],rows:[
+          ["Email 1 (día 1)","'¿Todo bien por allá?'","Reenganche emocional + recurso de alto valor como gancho de retorno"],
+          ["Email 2 (día 4)","'Lo mejor que publicamos mientras no estabas'","Mostrar los 3 mejores contenidos de los últimos 2 meses"],
+          ["Email 3 (día 8)","'¿Seguimos o te damos de baja?'","Decisión final transparente: quedarse activo o baja voluntaria"]
+        ]},
+        {t:"callout",v:"tip",ico:"💡",text:"Quien no abrió ninguno de los 3 emails: eliminar de la lista. Una lista de 300 personas que abren es más valiosa que 3.000 que ignoran. Y protege tu sender reputation, lo que mejora la entregabilidad de todos tus emails futuros."}
+       ]},
+      {t:"quiz",num:"Pregunta 8 · Avanzado",q:"Tienes $300 USD para el próximo mes. ¿Cómo los distribuyes entre los 4 pilares y por qué?",
+       ans:[
+        {t:"tbl",heads:["Canal","Inversión","Por qué esta distribución"],rows:[
+          ["Meta Ads","$150 USD","Resultados inmediatos, aprende el algoritmo, genera datos de audiencia"],
+          ["Herramientas (Canva + Metricool)","$50 USD","Infraestructura que permite producir contenido eficientemente"],
+          ["Contenido (tiempo o freelancer)","$70 USD","Sin contenido de valor, los ads no convierten — siempre va primero"],
+          ["SEO / Email","$30 USD","Plataformas gratis, inversión mínima en herramientas de análisis"]
+        ]},
+        {t:"callout",v:"warn",ico:"⚠️",text:"No pagues por seguidores ni likes (engagement falso que destruye el alcance orgánico). No contrates agencia con $300 (no alcanza para resultados reales). El mayor costo no es el dinero: es el tiempo mal invertido en canales sin tracción."}
+       ]}
+    ]},
+    {id:"m3-l4",title:"Preguntas Nivel Experto (9-10)",dur:"30 min",icon:"🏆",
+     desc:"Detección de alucinaciones de IA y estrategia completa de 90 días.",
+     blocks:[
+      {t:"quiz",num:"Pregunta 9 · Experto",q:"¿Cómo detectarías y corregirías una 'alucinación' de ChatGPT en un copy de marketing antes de publicar?",
+       ans:[
+        {t:"h",text:"Sistema de verificación en 3 niveles"},
+        {t:"ul",items:[
+          "Nivel 1 — Datos numéricos: cualquier porcentaje, cifra o estadística debe verificarse en Statista, HubSpot State of Marketing, IAB Latin America. Sin fuente en 5 minutos de búsqueda → eliminar el dato.",
+          "Nivel 2 — Citas y atribuciones: antes de publicar cualquier frase atribuida a una persona real, buscar la cita exacta en Google. Si no aparece en fuentes confiables, la IA la inventó con total seguridad.",
+          "Nivel 3 — Afirmaciones sobre tu propio negocio: si ChatGPT describe servicios, resultados o clientes que no existen, ese copy crea expectativas falsas que destruyen la confianza cuando el cliente real llega."
+        ]},
+        {t:"callout",v:"imp",ico:"🧠",text:"La IA no sabe que está mintiendo. No hay intención maliciosa: simplemente genera el texto más probable según sus patrones de entrenamiento. El error no es de la herramienta: es tuyo si publicas sin verificar cada dato factual."}
+       ]},
+      {t:"quiz",num:"Pregunta 10 · Experto",q:"Diseña una estrategia de 90 días para llevar Impulso Digital de 0 a 1.000 seguidores con engagement >5% y costo por lead <$1 USD.",
+       ans:[
+        {t:"tbl",heads:["Período","Fase","Acciones clave"],rows:[
+          ["Mes 1 — Sem 1-2","Cimientos","GA4 + píxel Meta + 3 emails de bienvenida configurados"],
+          ["Mes 1 — Sem 3-4","Prueba","5 posts/semana + primer ciclo de ads $5/día x 7 días"],
+          ["Mes 2 — Sem 5-8","Escala","Duplicar presupuesto en creatividad ganadora + 1 artículo SEO"],
+          ["Mes 3 — Sem 9-12","Conversión","Lead magnet + campaña específica + dashboard Looker Studio"]
+        ]},
+        {t:"callout",v:"tip",ico:"🎯",text:"La métrica de control de los 90 días no son los seguidores: es el costo por lead calificado. Si alguien descarga tu recurso, entra a tu lista y abre tus mensajes, ese es un lead real. Los seguidores son consecuencia, no objetivo."}
+       ]}
+    ]}
+  ]},
+
+  {id:"m4",icon:"🪜",num:"04",title:"La Escalera de Aprendizaje",sub:"5 niveles de cero a estratega con IA",accent:"#10B981",
+   lessons:[
+    {id:"m4-l1",title:"Nivel 1 — Explorador",dur:"3 semanas",icon:"🌱",
+     desc:"Reconoce el terreno y arma tu base de operaciones digital.",
+     blocks:[
+      {t:"h",text:"¿Qué sé hacer al completar este nivel?"},
+      {t:"ul",items:["Abro ChatGPT y escribo prompts con contexto completo obteniendo resultados útiles en el primer intento","Creo un diseño completo en Canva AI desde descripción de texto (sin tocar plantillas manualmente)","Conecto mis redes en Metricool y programo posts para fechas y horarios específicos","Explico los 4 pilares del marketing digital a otra persona sin leer notas","Tengo el perfil de mi cliente ideal documentado en 400-600 palabras","Perfil de Google Business completamente configurado y optimizado"]},
+      {t:"callout",v:"imp",ico:"🏁",text:"HITO DE SALIDA: Publicar 3 posts completamente creados con IA (copy en ChatGPT + diseño en Canva AI) y programados en Metricool para los mejores horarios. No importa el resultado — importa haber completado el ciclo completo."},
+      {t:"h",text:"Puente hacia el Nivel 2"},
+      {t:"chk",items:["Tengo el perfil de cliente ideal documentado y guardado","Publiqué al menos 3 posts usando el flujo completo de IA","Puedo explicar los 4 pilares a otra persona sin notas"]}
+    ]},
+    {id:"m4-l2",title:"Nivel 2 — Creador",dur:"3-4 semanas",icon:"✨",
+     desc:"Produce contenido consistente que genera audiencia real con sistemas de IA.",
+     blocks:[
+      {t:"h",text:"¿Qué sé hacer al completar este nivel?"},
+      {t:"ul",items:["Tengo un calendario de 30 días construido con ChatGPT y lo ejecuto consistentemente","Publico mínimo 5 posts semanales durante 4 semanas consecutivas sin fallar","Produzco artículos de 800-1.200 palabras con estructura SEO optimizada usando IA","Leo e interpreto métricas básicas (alcance, engagement, clics) en Metricool semanalmente","Grabo y edito al menos 1 Reel por semana usando CapCut con subtítulos automáticos"]},
+      {t:"callout",v:"warn",ico:"⚠️",text:"El error más común del Nivel 2: perfeccionismo. Esperar al logo perfecto, al copy perfecto, a la iluminación perfecta del video. El contenido publicado con defectos supera infinitamente al contenido perfecto que nunca sale."},
+      {t:"callout",v:"imp",ico:"🏁",text:"HITO DE SALIDA: Publicar 8 contenidos generados con IA (posts + al menos 1 video) en 2 semanas consecutivas, y alcanzar 500 seguidores con engagement rate promedio superior al 4%."}
+    ]},
+    {id:"m4-l3",title:"Nivel 3 — Activador",dur:"4-6 semanas",icon:"⚡",
+     desc:"Pon tu contenido a trabajar con publicidad inteligente que aprende sola.",
+     blocks:[
+      {t:"h",text:"¿Qué sé hacer al completar este nivel?"},
+      {t:"ul",items:["Configuro campañas completas en Meta Ads con Advantage+ y 3 variantes","Ejecuto ciclos de A/B testing: lanzar → medir 7 días → pausar débil → escalar ganadora","Calculo e interpreto el ROAS básico de cada campaña con datos reales","Tengo el píxel de Meta instalado midiendo al menos 1 evento de conversión real"]},
+      {t:"h",text:"El proceso completo de A/B testing"},
+      {t:"ul",items:["1. Crear 3 variantes de copy con ChatGPT (problema · beneficio · prueba social)","2. Crear 3 variantes visuales en Canva AI (imagen estática, carrusel, video)","3. Lanzar con el mismo presupuesto por variante durante exactamente 7 días","4. Analizar cuál tiene menor costo por resultado y mayor CTR","5. Pausar las 2 variantes más débiles sin remordimientos","6. Escalar el presupuesto de la ganadora (duplicar o triplicar)","7. Crear nueva variante para desafiar a la ganadora (ciclo continuo)"]},
+      {t:"callout",v:"imp",ico:"🏁",text:"HITO DE SALIDA: Completar al menos 1 ciclo de A/B testing (lanzar → medir → pausar → escalar) con píxel instalado y ROAS documentado. El resultado económico no importa para este hito — importa el proceso completo."}
+    ]},
+    {id:"m4-l4",title:"Nivel 4 — Automatizador",dur:"6-8 semanas",icon:"🤖",
+     desc:"Construye sistemas de email, SEO técnico y dashboards que trabajan sin ti.",
+     blocks:[
+      {t:"h",text:"Flujo de email automatizado por comportamiento"},
+      {t:"flow",text:`Suscripción nueva
+    ↓ (inmediato)
+Email 1: Bienvenida + entrega del recurso prometido
+    ↓ (2 días después)
+Email 2: Tip de valor profundo sobre el tema principal
+    ↓ (2 días después)
+Email 3: Historia + presentación de la oferta principal
+    ↓ (3 días después, segmentación automática)
+¿Abrió los 3 emails?
+├── SÍ → flujo de "prospecto caliente" (seguimiento cercano)
+└── NO → flujo de reactivación de 3 emails adicionales`},
+      {t:"h",text:"SEO técnico básico con IA — las 5 revisiones"},
+      {t:"chk",items:["PageSpeed Insights: si carga >3 segundos en móvil, pierdes el 40% de visitantes","Search Console: rastrear y corregir todos los errores 404 activos","Estructura de URLs: cortas, descriptivas, sin caracteres especiales ni IDs numéricos","Sitemap XML: generado y enviado a Google Search Console","Versión móvil: Google indexa primero mobile-first desde 2023"]},
+      {t:"callout",v:"imp",ico:"🏁",text:"HITO DE SALIDA: 3 flujos de email automatizados activos con tasa de conversión >3% medida en 30 días, y un dashboard en Looker Studio con datos reales de GA4 funcionando."}
+    ]},
+    {id:"m4-l5",title:"Nivel 5 — Estratega",dur:"6-8 semanas",icon:"🎯",
+     desc:"IA predictiva, CRM integrado y gestión de reputación en tiempo real.",
+     blocks:[
+      {t:"h",text:"¿Qué sé hacer al completar este nivel?"},
+      {t:"ul",items:["Uso 90 días de datos históricos para análisis predictivo de demanda con ChatGPT","Analizo el sentimiento de mi audiencia (comentarios, DMs, reviews) con prompts específicos","Tengo HubSpot CRM gratuito conectado con Mailchimp prediciendo probabilidad de conversión","Google Alerts configurado para monitoreo de reputación en tiempo real","Reportes semanales semi-automáticos: datos → ChatGPT → análisis → plan de acción"]},
+      {t:"prompt",text:`"Estos son los datos de tráfico, conversiones y comportamiento de mis últimos 90 días: [datos]. Identifica patrones estacionales, días de la semana con mayor conversión, y tipos de contenido que correlacionan con picos de ventas. Dame una previsión de demanda para los próximos 30 días y las acciones de marketing que debería anticipar."`},
+      {t:"callout",v:"imp",ico:"🏁",text:"HITO DE SALIDA: Estrategia que se autooptimiza semanalmente con inputs de IA, CRM integrado con flujos de email, y capacidad de anticipar tendencias de demanda con 2 semanas de anticipación basándose en datos históricos propios."}
+    ]}
+  ]},
+
+  {id:"m5",icon:"📚",num:"05",title:"Los Mejores Recursos de Aprendizaje",sub:"El directorio definitivo para Impulso Digital",accent:"#F97316",
+   lessons:[
+    {id:"m5-l1",title:"Recurso 1 — Platzi + Domestika",dur:"30 min",icon:"🎓",
+     desc:"Los dos únicos cursos en español que actualizan su contenido con frecuencia suficiente para seguir siendo relevantes.",
+     blocks:[
+      {t:"h",text:"OPCIÓN A — Platzi"},
+      {t:"p",text:"El enfoque más completo para emprendedores latinoamericanos. No enseña herramientas: enseña a pensar en sistemas. Sus rutas combinan estrategia con ejecución técnica y se actualizan cada 3-6 meses."},
+      {t:"tbl",heads:["Curso en Platzi","Para qué nivel","Tiempo"],rows:[
+        ["Fundamentos de Marketing Digital","Nivel 1-2","8 horas"],
+        ["ChatGPT para Marketing de Contenidos","Nivel 1-3","6 horas"],
+        ["Estrategia de Contenidos con IA","Nivel 2-3","7 horas"],
+        ["Google Analytics 4","Nivel 2-4","10 horas"],
+        ["Meta Ads: Campañas con IA","Nivel 3-4","8 horas"],
+        ["Email Marketing Automatizado","Nivel 3-4","6 horas"]
+      ]},
+      {t:"h",text:"OPCIÓN B — Domestika"},
+      {t:"ul",items:[
+        "IA para Marketing y Negocios Digitales — $15-25 USD pago único — Nivel 1-3",
+        "Canva para Redes Sociales con IA — $12-20 USD — Nivel 1-2",
+        "Email Marketing Efectivo — $15-25 USD — Nivel 3-4"
+      ]},
+      {t:"callout",v:"tip",ico:"📚",text:"Regla del 50/50: por cada hora de curso, dedica una hora de práctica aplicada a Impulso Digital. El aprendizaje que no se aplica en 48 horas se olvida en 2 semanas. Sin aplicación no hay habilidad, solo trivia."}
+    ]},
+    {id:"m5-l2",title:"Recurso 2 — Marketing 6.0 de Kotler",dur:"20 min",icon:"📖",
+     desc:"El único libro que captura el paradigma actual: convergencia de marketing, IA y experiencia humana.",
+     blocks:[
+      {t:"p",text:"La mayoría de libros de marketing digital envejecen en 18 meses. Marketing 6.0 es diferente porque no enseña herramientas: enseña a pensar estratégicamente donde la IA, el metaverso y la experiencia omnicanal coexisten."},
+      {t:"h",text:"Plan de lectura para Impulso Digital"},
+      {t:"tbl",heads:["Semana","Sección del libro","Aplicación inmediata"],rows:[
+        ["Semana 1","Introducción + Parte 1","Reescribir la propuesta de valor de Impulso Digital"],
+        ["Semana 2","Parte 2: Omnicanalidad","Mapear los puntos de contacto actuales de tu marca"],
+        ["Semana 3","Parte 3: Experiencia del cliente","Diseñar el recorrido completo del cliente ideal"],
+        ["Semana 4","Parte 4: Casos aplicados","Identificar el caso más parecido a Impulso Digital"]
+      ]},
+      {t:"callout",v:"info",ico:"📚",text:"Complemento recomendado: 'Hábitos Atómicos' de James Clear. No es de marketing, pero resuelve el problema más grande del emprendedor digital: la consistencia de ejecución. El 80% del marketing falla no por estrategia incorrecta sino por ejecución inconsistente."}
+    ]},
+    {id:"m5-l3",title:"Recurso 3 — Vilma Núñez + Comunidad",dur:"15 min",icon:"👩‍💼",
+     desc:"La referente hispana que enseña desde la práctica real con presupuestos ajustados.",
+     blocks:[
+      {t:"h",text:"¿Por qué Vilma Núñez específicamente para Impulso Digital?"},
+      {t:"ul",items:[
+        "Enseña lo que practica: construyó su negocio desde cero en Latinoamérica con las mismas restricciones de Impulso Digital (presupuesto ajustado, mercado hispanohablante, competencia creciente)",
+        "Actualiza constantemente: fue de las primeras referentes hispanas en integrar IA de forma práctica y honesta, sin venderla como magia",
+        "Comunidad de calidad: 'Convierte Más' tiene filtros activos que la mantienen orientada a resolución de problemas reales"
+      ]},
+      {t:"h",text:"Otros referentes que complementan"},
+      {t:"tbl",heads:["Referente","Especialidad","Canal principal"],rows:[
+        ["Romuald Fons","SEO avanzado con IA","YouTube + Blog personal"],
+        ["Ángel Candelario","Meta Ads para principiantes","YouTube"],
+        ["Coco Solution","Email marketing en español","YouTube + Newsletter"],
+        ["midudev","Prompts de marketing y IA","YouTube + GitHub"]
+      ]},
+      {t:"callout",v:"tip",ico:"💡",text:"Método: 1 video de Vilma por semana, aplicado INMEDIATAMENTE a Impulso Digital. No acumules videos sin aplicar. El conocimiento sin práctica inmediata es trivia que se olvida en 2 semanas."}
+    ]},
+    {id:"m5-l4",title:"Recurso 4 — Google Skillshop + Meta Blueprint",dur:"25 min",icon:"🎯",
+     desc:"Las guías oficiales siempre actualizadas, escritas por quienes diseñaron las herramientas.",
+     blocks:[
+      {t:"h",text:"Google Skillshop — Certificaciones clave (todas gratuitas)"},
+      {t:"tbl",heads:["Certificación","Nivel recomendado","Duración"],rows:[
+        ["Google Analytics 4","Nivel 2 en adelante","4-6 horas"],
+        ["Google Business Profile","Nivel 1 (empezar aquí)","1-2 horas"],
+        ["Google Search Console","Nivel 2-3","2-3 horas"],
+        ["Google Ads Search","Nivel 4 en adelante","3-4 horas"]
+      ]},
+      {t:"h",text:"Meta Blueprint — Módulos prioritarios"},
+      {t:"tbl",heads:["Módulo","Nivel","Por qué es crítico"],rows:[
+        ["Introducción a Meta Ads","Nivel 1-2","Arquitectura antes de gastar dinero en ads"],
+        ["Advantage+ Audience","Nivel 3","IA para audiencias sin datos históricos propios"],
+        ["Píxel de Meta y Medición","Nivel 3","Sin píxel los ads son gasto, no inversión medible"],
+        ["Creatividades que convierten","Nivel 2-3","Diseño + copy para ads que generan clics reales"]
+      ]},
+      {t:"callout",v:"imp",ico:"🏆",text:"Certificación más valiosa para comenzar: 'Meta Certified Digital Marketing Associate'. Gratuita, válida 1 año, reconocida en el mercado. Señal inmediata de credibilidad con clientes y colaboradores."}
+    ]},
+    {id:"m5-l5",title:"Recurso 5 — Repositorio de Prompts",dur:"20 min",icon:"⚙️",
+     desc:"Los atajos construidos por quienes ya hicieron las pruebas y errores por vos.",
+     blocks:[
+      {t:"h",text:"Los prompts más valiosos por categoría"},
+      {t:"prompt",text:`CONTENIDO — Carrusel de Instagram:
+"Escribe un carrusel de 5 diapositivas sobre [tema]. Audiencia: [descripción]. Tono: [definir]. Cada diapositiva: título impactante + 2 líneas de desarrollo. Última: CTA claro."`},
+      {t:"prompt",text:`COPYWRITING — Anuncio variante problema:
+"Escribe el copy de un anuncio de Facebook para [producto]. Primera línea: identifica el dolor exacto. Agitación en 2 frases. Solución en 1 frase. CTA directa. Máximo 80 palabras. Titular del anuncio (máx 27 caracteres)."`},
+      {t:"prompt",text:`EMAIL — 10 asuntos para A/B testing:
+"Genera 10 opciones de asunto para un email sobre [tema]. Variantes con: pregunta, número, urgencia real, curiosidad, beneficio claro. Máximo 50 caracteres cada uno. Marca con * las 3 mejores y explica por qué."`},
+      {t:"prompt",text:`SEO — Artículo optimizado completo:
+"Crea el esquema de un artículo de 1.200 palabras para la keyword [palabra clave]. Incluye: título H1 (máx 60 chars), metadescripción (máx 155 chars), 4 subtítulos H2, introducción que responde directamente la pregunta, 5 preguntas FAQ."`},
+      {t:"h",text:"¿Dónde encontrar más prompts de calidad?"},
+      {t:"ul",items:["Repositorios Notion gratuitos: buscar 'prompts de marketing digital en español'","GitHub de midudev: prompts de IA para negocios actualizados regularmente","PromptBase.com: marketplace con prompts especializados ($2-10 USD)","Newsletter 'IA Explicada': novedades semanales de IA aplicada a negocios"]}
+    ]}
+  ]},
+
+  {id:"m6",icon:"🧠",num:"06",title:"La Técnica de Feynman",sub:"Aprende explicando. Domina demostrando.",accent:"#7C3AED",
+   lessons:[
+    {id:"m6-l1",title:"Ronda 1 — La Explicación Simple",dur:"20 min",icon:"💬",
+     desc:"Así funciona el marketing digital con IA — explicado para que lo entienda cualquiera.",
+     blocks:[
+      {t:"h",text:"El sistema completo en 5 pasos simples"},
+      {t:"flow",text:`PASO 1 — Conocés a tu cliente (ChatGPT como investigador)
+Le describís quién es, qué problema tiene, qué busca en Google.
+La IA te devuelve un perfil detallado que guía todo lo demás.
+
+PASO 2 — Creás contenido que resuelve sus problemas
+(ChatGPT + Canva AI + CapCut + Metricool)
+Lo que antes tomaba medio día, ahora: 45 minutos.
+
+PASO 3 — Pagás para que más personas vean lo que funciona
+(Meta Ads + Advantage+)
+La IA de Facebook busca personas parecidas a
+quienes ya interactuaron con tu contenido.
+
+PASO 4 — Capturás el contacto de quien mostró interés
+(Mailchimp + automatización)
+3 emails automáticos que trabajan mientras dormís:
+bienvenida → valor → oferta.
+
+PASO 5 — Medís qué funcionó y ajustás para la próxima semana
+(GA4 + ChatGPT para análisis)
+No mirás likes. Mirás conversiones y costo por resultado.
+
+       ↓
+CICLO QUE SE RETROALIMENTA:
+más datos → IA optimiza mejor → mejores resultados`},
+      {t:"callout",v:"imp",ico:"✋",text:"EJERCICIO: Antes de leer los vacíos, explícale el sistema completo a alguien en voz alta (3 minutos, sin notas). Luego responde honestamente: ¿qué parte no pudiste explicar con fluidez?"}
+    ]},
+    {id:"m6-l2",title:"Los 5 Vacíos que la Mayoría Olvida",dur:"25 min",icon:"🔍",
+     desc:"Los errores conceptuales más comunes al explicar el sistema y cómo cerrarlos definitivamente.",
+     blocks:[
+      {t:"h",text:"Vacío 1 — 'No mencioné que la IA puede inventar datos'"},
+      {t:"p",text:"ChatGPT genera texto que suena plausible, no texto que es necesariamente verdadero. Si publicas estadísticas sin verificar, construyes tu estrategia sobre información inventada y dañas tu credibilidad cuando alguien verifica los datos."},
+      {t:"h",text:"Vacío 2 — 'No definí un embudo claro de conversión'"},
+      {t:"flow",text:`TOPE DEL EMBUDO (muchas personas)
+→ Contenido orgánico: atrae desconocidos
+→ Meta Ads: amplía el alcance pagado
+
+MEDIO DEL EMBUDO (menos personas, más interés)
+→ Lead magnet: convierte audiencia en contactos
+→ Email marketing: nutre el interés con valor
+
+FONDO DEL EMBUDO (pocas personas, alta intención)
+→ Oferta clara: convierte prospectos en clientes
+→ Seguimiento: convierte clientes en recurrentes`},
+      {t:"h",text:"Vacío 3 — 'Confundí me gusta con ventas'"},
+      {t:"tbl",heads:["Objetivo de negocio","Métrica que importa","Métrica de vanidad"],rows:[
+        ["Generar leads","Costo por lead","Alcance del post o del anuncio"],
+        ["Vender","ROAS / Costo por venta","Likes del anuncio o del post"],
+        ["Email marketing","Tasa de conversión real","Tasa de apertura (inflada por Apple)"]
+      ]},
+      {t:"h",text:"Vacío 4 — 'No revisé el copy generado por la IA'"},
+      {t:"ul",items:[
+        "Error tipo 1: Tono robótico — 'en el dinámico mundo del marketing digital'",
+        "Error tipo 2: Promesas exageradas — 'resultados garantizados', 'la solución definitiva'",
+        "Error tipo 3: Pérdida de voz de marca — suena formal cuando tu marca es cercana",
+        "Error tipo 4: Datos inventados presentados con absoluta confianza y sin citas"
+      ]},
+      {t:"h",text:"Vacío 5 — 'No expliqué por qué el orden de los pasos importa'"},
+      {t:"callout",v:"warn",ico:"⚠️",text:"Sin contenido de valor probado orgánicamente (Paso 2), no sabes qué amplificar con ads (Paso 3). Pagar para amplificar contenido que no conecta es desperdiciar el presupuesto activamente. El orden no es caprichoso: tiene lógica de construcción."}
+    ]},
+    {id:"m6-l3",title:"Ronda 2 — La Re-enseñanza Completa",dur:"25 min",icon:"🔄",
+     desc:"La explicación correcta con todos los vacíos integrados.",
+     blocks:[
+      {t:"h",text:"Checklist de verificación: ¿Pasaste la Técnica de Feynman?"},
+      {t:"chk",items:[
+        "¿Mencionaste que la IA puede inventar datos y necesita supervisión humana en cada pieza?",
+        "¿Explicaste que los likes no son ventas y qué métrica usar en cambio?",
+        "¿Mostraste el orden lógico de los 5 pasos y por qué no se pueden invertir?",
+        "¿Diste un ejemplo concreto para cada paso aplicado a un negocio real?",
+        "¿Explicaste el sistema completo sin usar jerga técnica inaccesible?",
+        "¿Mencionaste que el copy generado siempre necesita revisión antes de publicar?"
+      ]},
+      {t:"callout",v:"tip",ico:"✅",text:"Si marcaste las 6: pasaste la Técnica de Feynman. Entiendes el sistema de verdad y estás listo para ejecutar. Si marcaste menos de 6, vuelve a la Ronda 1 y estudia específicamente los vacíos que no aparecieron en tu explicación."}
+    ]},
+    {id:"m6-l4",title:"Ronda 3 — Casos de Aplicación Real",dur:"30 min",icon:"💼",
+     desc:"Demuestra comprensión verdadera aplicando el sistema a 3 situaciones nuevas.",
+     blocks:[
+      {t:"quiz",num:"Caso 1",q:"Carlos tiene 2.800 seguidores, engagement del 6%, publica 7 veces/semana con Canva y ChatGPT. En 3 meses vendió 4 prendas de su marca de ropa. ¿Cuál es el diagnóstico con el sistema de 5 pasos?",
+       ans:[
+        {t:"ul",items:[
+          "✅ Paso 1 (Cliente): tiene perfil implícito — el 6% de engagement lo demuestra",
+          "✅ Paso 2 (Contenido): crea consistentemente con buenas herramientas de IA",
+          "❌ Paso 3 (Ads): no tiene ads activos, solo confía en el alcance orgánico limitado",
+          "❌ Paso 4 (Email): no tiene sistema de captura de contactos ni secuencia de nutrición",
+          "❌ Paso 5 (Métricas): mide engagement (vanidad) en lugar de conversiones reales"
+        ]},
+        {t:"p",text:"Solución: crear un lead magnet relevante, activar Meta Ads a $5/día para capturar emails, configurar secuencia de 3 emails en Mailchimp. El problema de Carlos no era la cantidad de contenido: era que el contenido no tenía adónde llevar a las personas interesadas en comprar."}
+       ]},
+      {t:"quiz",num:"Caso 2",q:"Ana invirtió $200 USD en Meta Ads durante 3 días, con 1 solo anuncio y segmentación manual. No funcionó. Conclusión: 'Meta Ads no sirve para mi negocio'. ¿Cuántos errores cometió?",
+       ans:[
+        {t:"ul",items:[
+          "Error 1 — Segmentación manual: limitó artificialmente el algoritmo de Meta. Advantage+ hubiera encontrado audiencias que ella no habría pensado en segmentar.",
+          "Error 2 — 1 solo anuncio sin variantes: sin A/B testing no hay aprendizaje posible. No sabe si falló el copy, la imagen, o la oferta.",
+          "Error 3 — Solo 3 días: Meta necesita mínimo 7 días de fase de aprendizaje para completar ~50 eventos de optimización.",
+          "Error 4 — Copy de 200 palabras: los anuncios de feed tienen menos de 3 segundos. El copy efectivo tiene entre 40 y 90 palabras máximo.",
+          "Error 5 — Sin píxel instalado: Meta no podía optimizar hacia conversiones reales, solo hacia clics que no garantizan nada."
+        ]}
+       ]},
+      {t:"quiz",num:"Caso 3",q:"Julián tiene 800 suscriptores, tasa de apertura del 42%, CTR de 0.8%, y nunca ha vendido nada por email. ¿Cuál es el diagnóstico real?",
+       ans:[
+        {t:"p",text:"El 42% de tasa de apertura está inflado por Apple Mail Privacy Protection (2021). El dato que revela la verdad es el 0.8% de CTR: de 800 suscriptores, solo 6-7 personas hacen clic en algo del email."},
+        {t:"h",text:"Las 3 causas reales del problema:"},
+        {t:"ul",items:[
+          "Causa 1 — Sin llamada a la acción clara: la IA genera contenido informativo sin CTA si no se le indica explícitamente. La gente lee y cierra.",
+          "Causa 2 — Audiencia no segmentada: 800 suscriptores con intenciones distintas reciben el mismo email. El de etapa inicial recibe lo mismo que el que está listo para comprar.",
+          "Causa 3 — Sin embudo detrás del clic: el enlace lleva a un artículo del blog sin ninguna siguiente acción clara. El ciclo termina en la lectura."
+        ]}
+       ]}
+    ]}
+  ]}
+];
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let state = {
+  view: 'home',
+  modId: null,
+  lesId: null,
+  completed: new Set(),
+  checks: new Set(),
+  quizOpen: new Set()
+};
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const totalLessons = MODS.reduce((s,m) => s + m.lessons.length, 0);
+
+function navigate(view, modId=null, lesId=null) {
+  state.view = view;
+  state.modId = modId;
+  state.lesId = lesId;
+  render();
+  const c = $('content');
+  if (c) c.scrollTop = 0;
+  window.scrollTo(0,0);
+  // Close sidebar on mobile
+  if (window.innerWidth <= 820) {
+    $('sidebar').classList.remove('sidebar-open');
+    $('overlay').classList.remove('show');
+  }
+}
+
+function toggleSidebar() {
+  const sb = $('sidebar');
+  const ov = $('overlay');
+  sb.classList.toggle('sidebar-open');
+  ov.classList.toggle('show');
+}
+
+function toggleComplete(lesId) {
+  if (state.completed.has(lesId)) state.completed.delete(lesId);
+  else state.completed.add(lesId);
+  renderSidebar();
+  renderTopbar();
+  // re-render complete btn
+  const cb = $('comp-btn-'+lesId);
+  if (cb) {
+    const done = state.completed.has(lesId);
+    cb.className = 'comp-btn' + (done?' done-btn':'');
+    cb.innerHTML = done ? '✓ Lección completada' : 'Marcar como completada';
+  }
+}
+
+function toggleCheck(key) {
+  const el = $('chk-'+key);
+  if (!el) return;
+  if (state.checks.has(key)) {
+    state.checks.delete(key);
+    el.classList.remove('chk-on');
+    el.querySelector('.chk-box').innerHTML = '';
+  } else {
+    state.checks.add(key);
+    el.classList.add('chk-on');
+    el.querySelector('.chk-box').innerHTML = '✓';
+  }
+}
+
+function toggleQuiz(key) {
+  const el = $('quiz-ans-'+key);
+  const btn = $('quiz-btn-'+key);
+  if (!el || !btn) return;
+  if (state.quizOpen.has(key)) {
+    state.quizOpen.delete(key);
+    el.style.display = 'none';
+    btn.textContent = '▼ Ver respuesta completa';
+  } else {
+    state.quizOpen.add(key);
+    el.style.display = 'block';
+    btn.textContent = '▲ Ocultar respuesta';
+  }
+}
+
+function getModProg(mod) {
+  const done = mod.lessons.filter(l => state.completed.has(l.id)).length;
+  return Math.round((done/mod.lessons.length)*100);
+}
+
+function getOverallProg() {
+  return Math.round((state.completed.size / totalLessons) * 100);
+}
+
+// ─────────────────────────────────────────────
+// BLOCK RENDERERS
+// ─────────────────────────────────────────────
+function renderBlock(b, idx='') {
+  switch(b.t) {
+    case 'h': return `<h3 class="cb-h2">${b.text}</h3>`;
+    case 'sh': return `<h4 class="cb-h3">${b.text}</h4>`;
+    case 'p': return `<p class="cb-p">${b.text}</p>`;
+    case 'ul': return `<ul class="cb-ul">${b.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    case 'tbl': return `
+      <div class="cb-tbl-wrap">
+        <table class="cb-tbl">
+          <thead><tr>${b.heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+          <tbody>${b.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table>
+      </div>`;
+    case 'callout': return `
+      <div class="callout ${b.v}">
+        <span class="callout-ico">${b.ico}</span>
+        <span class="callout-txt">${b.text}</span>
+      </div>`;
+    case 'flow': return `<pre class="cb-flow">${b.text}</pre>`;
+    case 'prompt': return `<div class="cb-prompt"><div class="cb-prompt-txt">${b.text}</div></div>`;
+    case 'ex': return `
+      <div class="cb-ex">
+        <div class="cb-ex-lbl">✏️ Mini-ejercicio</div>
+        <div class="cb-ex-txt">${b.text}</div>
+      </div>`;
+    case 'chk': {
+      const items = b.items.map((item,i) => {
+        const key = `${idx}-${i}`;
+        const on = state.checks.has(key);
+        return `<div class="chk${on?' chk-on':''}" id="chk-${key}" onclick="toggleCheck('${key}')">
+          <div class="chk-box">${on?'✓':''}</div>
+          <span>${item}</span>
+        </div>`;
+      }).join('');
+      return `<div class="checklist">${items}</div>`;
+    }
+    case 'quiz': {
+      const k = b.num.replace(/\s+/g,'_');
+      const open = state.quizOpen.has(k);
+      const ansHtml = b.ans.map((ab,i) => renderBlock(ab, `${k}-ans-${i}`)).join('');
+      return `
+        <div class="quiz-card fa">
+          <div class="quiz-n">${b.num}</div>
+          <div class="quiz-q">${b.q}</div>
+          <button class="quiz-btn" id="quiz-btn-${k}" onclick="toggleQuiz('${k}')">
+            ${open?'▲ Ocultar respuesta':'▼ Ver respuesta completa'}
+          </button>
+          <div class="quiz-ans" id="quiz-ans-${k}" style="display:${open?'block':'none'}">
+            ${ansHtml}
+          </div>
+        </div>`;
+    }
+    default: return '';
+  }
+}
+
+// ─────────────────────────────────────────────
+// SIDEBAR
+// ─────────────────────────────────────────────
+function renderSidebar() {
+  const prog = getOverallProg();
+  $('prog-pct').textContent = prog + '%';
+  $('prog-fill').style.width = prog + '%';
+
+  const nav = $('mod-nav');
+  nav.innerHTML = MODS.map(m => {
+    const done = m.lessons.every(l => state.completed.has(l.id));
+    const act = state.modId === m.id;
+    return `
+      <button class="mod-btn${act?' act':''}${done?' done':''}" onclick="navigate('module','${m.id}')">
+        <div class="mod-btn-icon">${m.icon}</div>
+        <div class="mod-btn-info">
+          <div class="mod-btn-num">Módulo ${m.num}</div>
+          <div class="mod-btn-name">${m.title}</div>
+        </div>
+        <div class="mod-btn-ck">${done?'✓':''}</div>
+      </button>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// TOPBAR
+// ─────────────────────────────────────────────
+function renderTopbar() {
+  const mod = state.modId ? MODS.find(m=>m.id===state.modId) : null;
+  const les = (mod && state.lesId) ? mod.lessons.find(l=>l.id===state.lesId) : null;
+
+  let bc = `<span class="bc-link" onclick="navigate('home')">Inicio</span>`;
+  if (mod) bc += `<span class="bc-sep">›</span><span class="bc-link" onclick="navigate('module','${mod.id}')">${mod.title}</span>`;
+  if (les) bc += `<span class="bc-sep">›</span><span style="color:var(--txt)">${les.title}</span>`;
+  $('breadcrumb').innerHTML = bc;
+  $('badge-count').textContent = `${state.completed.size}/${totalLessons} lecciones`;
+}
+
+// ─────────────────────────────────────────────
+// VIEWS
+// ─────────────────────────────────────────────
+function renderHome() {
+  const statsHtml = [
+    {v:"20h",l:"De aprendizaje"},{v:"6",l:"Módulos"},{v:"40",l:"Lecciones"},
+    {v:"7",l:"Herramientas IA"},{v:"5",l:"Niveles"}
+  ].map((s,i)=>`
+    <div class="stat fa fa${i+1}">
+      <div class="stat-v">${s.v}</div>
+      <div class="stat-l">${s.l}</div>
+    </div>`).join('');
+
+  const cardsHtml = MODS.map((m,i)=>{
+    const mp = getModProg(m);
+    return `
+      <div class="mcard fa fa${Math.min(i+1,6)}" onclick="navigate('module','${m.id}')">
+        <div class="mcard-top">
+          <div class="mcard-ico" style="background:${m.accent}18">${m.icon}</div>
+          <div class="mcard-no">MÓDULO ${m.num}</div>
+        </div>
+        <div class="mcard-title">${m.title}</div>
+        <div class="mcard-sub">${m.sub}</div>
+        <div class="mcard-foot">
+          <div class="mcard-meta">📚 ${m.lessons.length} lecciones</div>
+          <div class="mcard-arr">→</div>
+        </div>
+        <div class="mprog">
+          <div class="mprog-f" style="width:${mp}%;background:${m.accent}"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="hero">
+      <div class="hero-eye">
+        <span class="pulse-dot"></span>
+        Curso completo · 6 módulos · 40 lecciones
+      </div>
+      <h1 class="hero-h1">Marketing Digital con IA<br>para <span class="hi">Impulso Digital</span></h1>
+      <p class="hero-p">Aprende a crear contenido, activar publicidad inteligente y automatizar tu marketing con herramientas de IA. Sin equipo, con presupuesto ajustado, desde Latinoamérica.</p>
+      <div class="hero-stats">${statsHtml}</div>
+    </div>
+    <h2 style="font-family:'Sora',sans-serif;font-size:13px;font-weight:700;color:var(--txt2);margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em">Módulos del curso</h2>
+    <div class="grid">${cardsHtml}</div>`;
+}
+
+function renderModule(modId) {
+  const mod = MODS.find(m=>m.id===modId);
+  if (!mod) return '<p>Módulo no encontrado</p>';
+
+  const lessonsHtml = mod.lessons.map((l,i)=>{
+    const done = state.completed.has(l.id);
+    return `
+      <div class="les-item fa fa${Math.min(i+1,6)} ${done?'done-les':''}"
+           onclick="navigate('lesson','${modId}','${l.id}')">
+        <div class="les-num" style="${done?'background:rgba(16,185,129,.2);color:var(--green)':''}">
+          ${done?'✓':String(i+1).padStart(2,'0')}
+        </div>
+        <div class="les-info">
+          <div class="les-title">${l.title}</div>
+          <div class="les-meta">
+            <span>${l.icon}</span>
+            <span>${l.dur}</span>
+            ${done?'<span style="color:var(--green)">Completada ✓</span>':''}
+          </div>
+        </div>
+        <div class="les-arr">→</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <button class="back-btn fa" onclick="navigate('home')">← Inicio</button>
+    <div class="mod-hdr fa fa1">
+      <div class="mod-hdr-top">
+        <div class="mod-big-ico" style="background:${mod.accent}18;border:1px solid ${mod.accent}33">
+          ${mod.icon}
+        </div>
+        <div>
+          <div class="mod-eyebrow" style="color:${mod.accent}">Módulo ${mod.num}</div>
+          <h1 class="mod-title">${mod.title}</h1>
+          <p class="mod-sub">${mod.sub}</p>
+        </div>
+      </div>
+    </div>
+    <div class="les-list">${lessonsHtml}</div>`;
+}
+
+function renderLesson(modId, lesId) {
+  const mod = MODS.find(m=>m.id===modId);
+  if (!mod) return '';
+  const les = mod.lessons.find(l=>l.id===lesId);
+  if (!les) return '';
+  const lesIdx = mod.lessons.indexOf(les);
+  const prev = lesIdx > 0 ? mod.lessons[lesIdx-1] : null;
+  const next = lesIdx < mod.lessons.length-1 ? mod.lessons[lesIdx+1] : null;
+  const done = state.completed.has(les.id);
+
+  const blocksHtml = les.blocks.map((b,i) => renderBlock(b, `${les.id}-${i}`)).join('');
+
+  const prevBtn = prev
+    ? `<button class="nav-b" onclick="navigate('lesson','${modId}','${prev.id}')">← ${prev.title}</button>`
+    : `<button class="nav-b" onclick="navigate('module','${modId}')">← Ver módulo</button>`;
+
+  const nextBtn = next
+    ? `<button class="nav-b prim nav-b-r" onclick="navigate('lesson','${modId}','${next.id}')">${next.title} →</button>`
+    : `<button class="nav-b prim nav-b-r" onclick="navigate('home')">🏠 Volver al inicio</button>`;
+
+  return `
+    <div class="fa">
+      <button class="back-btn" onclick="navigate('module','${modId}')">← ${mod.title}</button>
+      <div class="les-tag">Módulo ${mod.num}</div>
+      <h1 class="les-h1">${les.title}</h1>
+      <p class="les-desc">${les.desc}</p>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+        <div class="les-dur">⏱ ${les.dur}</div>
+        <button class="comp-btn${done?' done-btn':''}" id="comp-btn-${les.id}"
+          onclick="${!done?`toggleComplete('${les.id}')`:''}">
+          ${done?'✓ Lección completada':'Marcar como completada'}
+        </button>
+      </div>
+      <div style="height:1px;background:var(--border);margin-bottom:20px"></div>
+      ${blocksHtml}
+      <div class="les-nav">${prevBtn}${nextBtn}</div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+// MAIN RENDER
+// ─────────────────────────────────────────────
+function render() {
+  renderSidebar();
+  renderTopbar();
+
+  let html = '';
+  if (state.view === 'home') html = renderHome();
+  else if (state.view === 'module' && state.modId) html = renderModule(state.modId);
+  else if (state.view === 'lesson' && state.modId && state.lesId) html = renderLesson(state.modId, state.lesId);
+
+  $('content').innerHTML = html;
+
+  // Trigger animations
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.fa').forEach((el, i) => {
+      el.style.animation = `fadeUp 0.4s cubic-bezier(.4,0,.2,1) ${i * 0.04}s both`;
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
